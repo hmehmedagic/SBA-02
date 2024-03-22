@@ -1,21 +1,11 @@
-function learnerData() {};
-learnerData.prototype.setID = function(student_id) {
-    this.id = student_id;
-};
-learnerData.prototype.setAvg = function() {
-    this.avg = calcAvg();
-}
-learnerData.prototype.setAssignments = function(assignments) {
-    this.assignments = assignments;
-}
-
-learnerData.prototype.calcAvg = function() {
-    let avg = 0;
-    for (let i = 0; i < this.assignments.length; i++) {
-        avg += this.assignments[i];
+const calcAvg = (learnerData) => {
+    let total_points = 0;
+    let total_possible = 0;
+    for (let i = 0; i < learnerData.assignments.length; i++) {
+        total_points += learnerData.assignments[i].score;
+        total_possible += learnerData.assignments[i].points_possible;
     }
-    avg /= this.assignments.length;
-    return avg;
+    return total_points / total_possible;
 }
 
 function isValueIncluded(array, value) {
@@ -42,7 +32,6 @@ const calcPenalty = (score, points_possible, dueDate, subDate) => {
 
 const getLearnerDataHelper = (course, ag, submissions, myObj) => {
     let assigns = [];
-    console.log(myObj.id);
     for (let i = 0; i < submissions.length; i++) {
         if (myObj.id === submissions[i].learner_id) {
             let assign = {};
@@ -66,6 +55,21 @@ const getLearnerDataHelper = (course, ag, submissions, myObj) => {
         }
     }
     return assigns;
+}
+
+const formatData = (data, result) => {
+    for (let i = 0; i < data.length; i++) {
+        delete data.learnerData;
+        const learner = data[i];
+        for (let j = 0; j < learner.assignments.length; j++) {
+            const assignment = learner.assignments[j];
+            const assignmentKey = `${assignment.assignment_id}`;
+            learner[assignmentKey] = assignment.score / assignment.points_possible;
+        }
+        // Now remove the 'assignments' property from the learner object
+        delete learner.assignments;
+        result.push(learner);
+    }
 }
 
 // The provided course information.
@@ -160,22 +164,23 @@ function getLearnerData(course, ag, submissions) {
         }
     ];*/
     const result = [];
+    const data = [];
     for (let i = 0; i < LearnerSubmissions.length; i++) {
-        if (!isValueIncluded(result, LearnerSubmissions[i].learner_id)) {
-            let myObj = new learnerData();
-            myObj.setID(LearnerSubmissions[i].learner_id);
-            myObj.setAssignments(getLearnerDataHelper(course, ag, submissions, myObj)); //to get the assignments and avg
-            //console.log(getLearnerDataHelper(course, ag, submissions, myObj));
-            result.push(myObj);
+        if (!isValueIncluded(data, LearnerSubmissions[i].learner_id)) {
+            let learnerData = {};
+            learnerData.id = LearnerSubmissions[i].learner_id;
+            learnerData.assignments = getLearnerDataHelper(course, ag, submissions, learnerData); //to get the assignments and avg
+            learnerData.avg = learnerData.assignments.length > 0 ? calcAvg(learnerData) : 0;
+            data.push(learnerData);
         } else { //else statement not necessary. Was used to fulfill requirement of SBA
             continue; //used to fullfil requirement
         }
     }
+
+    formatData(data, result);
     return result;
 }
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
-const util = require('util');
-console.log(util.inspect(result, { depth: null }));
 
-//console.log(result);
+console.log(result);
