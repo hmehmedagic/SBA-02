@@ -5,16 +5,24 @@ const calcAvg = (learnerData) => {
         total_points += learnerData.assignments[i].score;
         total_possible += learnerData.assignments[i].points_possible;
     }
-    return total_points / total_possible;
+    try {
+        if (total_possible === 0) {
+            throw new Error('Divison by zero error');
+        }
+        return total_points / total_possible;
+    } catch (error) {
+        console.error(error.message);
+        return null;
+    }
 }
 
-function isValueIncluded(array, value) {
-    for (let i = 0; i < array.length; i++) {
+const isValueIncluded = (array, value) => {
+    let i = 0;
+    while (i < array.length) { //While loop used as per requirement of using two different types of loops. For loop is better here.
         if (array[i].id === value) {
             return true;
-        } else { //else statement not necessary. Was used to fulfill requirement of SBA
-            continue; //used to fullfil requirement
         }
+        i++;
     }
     return false;
 }
@@ -182,5 +190,4 @@ function getLearnerData(course, ag, submissions) {
 }
 
 const result = getLearnerData(CourseInfo, AssignmentGroup, LearnerSubmissions);
-
 console.log(result);
