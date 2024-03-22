@@ -28,12 +28,12 @@ const isValueIncluded = (array, value) => {
 }
 
 const calcPenalty = (score, points_possible, dueDate, subDate) => {
-    let finalScore;
+    let penalizedScore;
     let percentage;
     if (subDate > dueDate) {
         percentage = points_possible * .10;
-        finalScore = score - percentage;
-        return finalScore;
+        penalizedScore = score - percentage;
+        return penalizedScore;
     }
     return score;
 }
