@@ -67,7 +67,6 @@ const getLearnerDataHelper = (course, ag, submissions, myObj) => {
 
 const formatData = (data, result) => {
     for (let i = 0; i < data.length; i++) {
-        delete data.learnerData;
         const learner = data[i];
         for (let j = 0; j < learner.assignments.length; j++) {
             const assignment = learner.assignments[j];
