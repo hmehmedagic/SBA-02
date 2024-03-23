@@ -48,7 +48,7 @@ const getLearnerDataHelper = (course, ag, submissions, myObj) => {
 }
 
 const formatNumber = (num) => {
-    let a_num = parseFloat(num).toFixed(2); //convert num to a float from string to fix the decimal places
+    let a_num = parseFloat(num).toFixed(3); //convert num to a float from string to fix the decimal places
     a_num = parseFloat(a_num).toString(); //convert back to a string to trim all trailing zeros
     return parseFloat(a_num); //convert back to a float for proper output requirements
 }
