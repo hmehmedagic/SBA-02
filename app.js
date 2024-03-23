@@ -1,21 +1,3 @@
-const calcAvg = (learnerData) => {
-    let total_points = 0;
-    let total_possible = 0;
-    for (let i = 0; i < learnerData.assignments.length; i++) {
-        total_points += learnerData.assignments[i].score;
-        total_possible += learnerData.assignments[i].points_possible;
-    }
-    try {
-        if (total_possible === 0) {
-            throw new Error('Divison by zero error');
-        }
-        return total_points / total_possible;
-    } catch (error) {
-        console.error(error.message);
-        return null;
-    }
-}
-
 const isValueIncluded = (array, value) => {
     let i = 0;
     while (i < array.length) { //While loop used as per requirement of using two different types of loops. For loop is better here.
@@ -65,17 +47,40 @@ const getLearnerDataHelper = (course, ag, submissions, myObj) => {
     return assigns;
 }
 
+const formatNumber = (num) => {
+    let a_num = parseFloat(num).toFixed(2); //convert num to a float from string to fix the decimal places
+    a_num = parseFloat(a_num).toString(); //convert back to a string to trim all trailing zeros
+    return parseFloat(a_num); //convert back to a float for proper output requirements
+}
+
 const formatData = (data, result) => {
     for (let i = 0; i < data.length; i++) {
         const learner = data[i];
         for (let j = 0; j < learner.assignments.length; j++) {
             const assignment = learner.assignments[j];
             const assignmentKey = `${assignment.assignment_id}`;
-            learner[assignmentKey] = assignment.score / assignment.points_possible;
+            learner[assignmentKey] = formatNumber(assignment.score / assignment.points_possible);
         }
         // Now remove the 'assignments' property from the learner object
         delete learner.assignments;
         result.push(learner);
+    }
+}
+const calcAvg = (learnerData) => {
+    let total_points = 0;
+    let total_possible = 0;
+    for (let i = 0; i < learnerData.assignments.length; i++) {
+        total_points += learnerData.assignments[i].score;
+        total_possible += learnerData.assignments[i].points_possible;
+    }
+    try {
+        if (total_possible === 0) {
+            throw new Error('Divison by zero error');
+        }
+        return formatNumber(total_points / total_possible);
+    } catch (error) {
+        console.error(error.message);
+        return null;
     }
 }
 
@@ -172,10 +177,10 @@ function getLearnerData(course, ag, submissions) {
     ];*/
     const result = [];
     const data = [];
-    for (let i = 0; i < LearnerSubmissions.length; i++) {
-        if (!isValueIncluded(data, LearnerSubmissions[i].learner_id)) {
+    for (let i = 0; i < submissions.length; i++) {
+        if (!isValueIncluded(data, submissions[i].learner_id)) {
             let learnerData = {};
-            learnerData.id = LearnerSubmissions[i].learner_id;
+            learnerData.id = submissions[i].learner_id;
             learnerData.assignments = getLearnerDataHelper(course, ag, submissions, learnerData); //to get the assignments and avg
             learnerData.avg = learnerData.assignments.length > 0 ? calcAvg(learnerData) : 0;
             data.push(learnerData);
