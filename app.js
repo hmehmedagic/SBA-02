@@ -26,7 +26,7 @@ const getLearnerDataHelper = (course, ag, submissions, myObj) => {
         if (myObj.id === submissions[i].learner_id) {
             let assign = {};
             for (let j = 0; j < ag.assignments.length; j++) {
-                if (ag.assignments[j].id === submissions[i].assignment_id) {
+                if (ag.assignments[j].id === submissions[i].assignment_id && course.id === ag.course_id) {
                     let dueDate = new Date(ag.assignments[j].due_at);
                     let subDate = new Date(submissions[i].submission.submitted_at);
                     let currentDate = new Date();
@@ -181,8 +181,8 @@ function getLearnerData(course, ag, submissions) {
         if (!isValueIncluded(data, submissions[i].learner_id)) {
             let learnerData = {};
             learnerData.id = submissions[i].learner_id;
-            learnerData.assignments = getLearnerDataHelper(course, ag, submissions, learnerData); //to get the assignments and avg
-            learnerData.avg = learnerData.assignments.length > 0 ? calcAvg(learnerData) : 0;
+            learnerData.assignments = getLearnerDataHelper(course, ag, submissions, learnerData); //to get the assignments
+            learnerData.avg = learnerData.assignments.length > 0 ? calcAvg(learnerData) : 0; //to get the avg
             data.push(learnerData);
         } else { //else statement not necessary. Was used to fulfill requirement of SBA
             continue; //used to fullfil requirement
